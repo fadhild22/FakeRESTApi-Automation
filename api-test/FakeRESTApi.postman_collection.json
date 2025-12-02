@@ -1,0 +1,1928 @@
+{
+	"info": {
+		"_postman_id": "4ee5d2ef-5f48-4499-b815-7ca2fbf975e2",
+		"name": "FakeRESTApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49711459",
+		"_collection_link": "https://muhammadfadhildarussalam-fd-4242844.postman.co/workspace/Muhammad-Fadhil-Darussalam's-Wo~d24ab610-0ec2-4c18-891f-617b0d6ca75b/collection/49711459-4ee5d2ef-5f48-4499-b815-7ca2fbf975e2?action=share&source=collection_link&creator=49711459"
+	},
+	"item": [
+		{
+			"name": "Activities",
+			"item": [
+				{
+					"name": "ACT-001 Create Activity Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate new ID\",function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Title yang dikirim harus sesuai dengan yang diterima\", function () {\r",
+									"    pm.expect(jsonData.title).to.eql(requestData.title);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of Data Type Response\", function(){\r",
+									"    pm.expect(jsonData.id).to.be.a(\"number\");\r",
+									"    pm.expect(jsonData.title).to.be.a(\"string\");\r",
+									"    pm.expect(jsonData.dueDate).to.be.a(\"string\");\r",
+									"    pm.expect(jsonData.completed).to.be.a(\"boolean\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n\"id\": 10, \r\n\"title\": \"Meeting\", \r\n\"dueDate\": \"2025-12-31T10:00:00\", \r\n\"completed\": false \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Activities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACT-002 Create Activity Invalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"Response Negative Test: \", jsonData);\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function (){\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Title: One or more validation errors occurred.\", function () {\r",
+									"    pm.expect(jsonData.title).to.eql(\"One or more validation errors occurred.\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure ID is NOT created\", function(){\r",
+									"    pm.expect(jsonData).to.not.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"//array security testing\r",
+									"var forbiddenKeys = [\"id\", \"password\", \"userName\"];\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 1: No Forbidden Keys in Response\", function(){\r",
+									"    forbiddenKeys.forEach(function(key) {\r",
+									"        pm.expect(jsonData).to.not.have.property(key);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 2: Title must be an Error Message\", function(){\r",
+									"    if (jsonData.hasOwnProperty(\"title\")){\r",
+									"        pm.expect(jsonData.title).to.include(\"One or more validation errors occurred.\");\r",
+									"        pm.expect(jsonData.title).to.not.equal(\"Meeting Direksi PT Snorlax Tidur\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 11, \r\n    \"title\": \"Error\", \r\n    \"dueDate\": \"BESOK-SORE\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Activities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACT-003 Get All Activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of All Type Data\", function(){\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.length).to.be.above(0);\r",
+									"\r",
+									"    jsonData.forEach(function (item, index) {\r",
+									"        pm.expect(item.id, \"Error di data ke-\"+ index).to.be.a(\"number\");\r",
+									"        pm.expect(item.title, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"        pm.expect(item.dueDate, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"        pm.expect(item.completed, \"Error di data ke-\" + index).to.be.a(\"boolean\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Activities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACT-004 Get Single Activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status Code is 404 Not Found\", function(){\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"//array security testing\r",
+									"var forbiddenKeys = [\"id\", \"password\", \"userName\"];\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 1: No Forbidden Keys in Response\", function(){\r",
+									"    forbiddenKeys.forEach(function(key) {\r",
+									"        pm.expect(jsonData).to.not.have.property(key);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 2: Title must be an Error Message\", function(){\r",
+									"    if (jsonData.hasOwnProperty(\"title\")){\r",
+									"        pm.expect(jsonData.title).to.include(\"Not Found\");\r",
+									"        pm.expect(jsonData.title).to.not.equal(\"Meeting Direksi PT Snorlax Tidur\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Activities/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Activities",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACT-005 Update Activity Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"var targetID = pm.environment.get(\"target_id\");\r",
+									"\r",
+									"pm.test(\"ID still the same\", function(){\r",
+									"    pm.expect(jsonData.id).to.eql(10);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Data sesuai dengan Request\", function (){\r",
+									"    pm.expect(jsonData.title).to.eql(requestData.title);\r",
+									"    pm.expect(jsonData.completed).to.eql(requestData.completed);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Struktur data tidak hilang\", function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"title\");\r",
+									"    pm.expect(jsonData).to.have.property(\"dueDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"completed\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 10, \r\n    \"title\": \"Meeting\", \r\n    \"completed\": true \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Activities/10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Activities",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACT-006 Delete Activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var bodyText = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Ensure response status is 200 or 204\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code === 200 && bodyText.length > 0){\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var targetID = pm.environment.get(\"id\");\r",
+									"\r",
+									"    pm.test(\"Ensure ID correct\", function(){\r",
+									"        if(jsonData.id){\r",
+									"            pm.expect(String(jsonData.id)).to.eql(String(targetID));\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Delete success with status 204\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Activities/10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Activities",
+								"10"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authors",
+			"item": [
+				{
+					"name": "AUTH-001 Create Author",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate new ID\",function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"data yang dikirim harus sesuai dengan yang diterima\", function () {\r",
+									"    pm.expect(jsonData.firstName).to.eql(requestData.firstName);\r",
+									"    pm.expect(jsonData.lastName).to.eql(requestData.lastName);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of Data Type Response\", function(){\r",
+									"    pm.expect(jsonData.id).to.be.a(\"number\");\r",
+									"    pm.expect(jsonData.idBook).to.be.a(\"number\");\r",
+									"    pm.expect(jsonData.firstName).to.be.a(\"string\");\r",
+									"    pm.expect(jsonData.lastName).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 55, \r\n    \"idBook\": 1, \r\n    \"firstName\": \"Fadhil\", \r\n    \"lastName\": \"QA\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Authors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH-002 Get All Authors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of All Type Data\", function(){\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.length).to.be.above(0);\r",
+									"\r",
+									"    jsonData.forEach(function (item, index) {\r",
+									"        pm.expect(item.id, \"Error di data ke-\"+ index).to.be.a(\"number\");\r",
+									"        pm.expect(item.idBook, \"Error di data ke-\" + index).to.be.a(\"number\");\r",
+									"        pm.expect(item.firstName, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"        pm.expect(item.lastName, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Authors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH-003 Get Single Author",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status Code is 404 Not Found\", function(){\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"//array security testing\r",
+									"var forbiddenKeys = [\"id\", \"password\", \"userName\"];\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 1: No Forbidden Keys in Response\", function(){\r",
+									"    forbiddenKeys.forEach(function(key) {\r",
+									"        pm.expect(jsonData).to.not.have.property(key);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 2: Title must be an Error Message\", function(){\r",
+									"    if (jsonData.hasOwnProperty(\"title\")){\r",
+									"        pm.expect(jsonData.title).to.include(\"Not Found\");\r",
+									"        pm.expect(jsonData.title).to.not.equal(\"Fadhil\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Authors/-1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Authors",
+								"-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH-004 Update Author Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"var targetID = pm.environment.get(\"target_id\");\r",
+									"\r",
+									"pm.test(\"ID still the same\", function(){\r",
+									"    pm.expect(jsonData.id).to.eql(55);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Data sesuai dengan Request\", function (){\r",
+									"    pm.expect(jsonData.firstName).to.eql(requestData.firstName);\r",
+									"    pm.expect(jsonData.lastName).to.eql(requestData.lastName);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Struktur data tidak hilang\", function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idBook\");\r",
+									"    pm.expect(jsonData).to.have.property(\"firstName\");\r",
+									"    pm.expect(jsonData).to.have.property(\"lastName\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 55, \r\n    \"idBook\": 1, \r\n    \"firstName\": \"Fadhil\", \r\n    \"lastName\": \"Senior QA\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Authors/55",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Authors",
+								"55"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH-005 Update Author Invalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"var targetID = pm.environment.get(\"target_id\");\r",
+									"\r",
+									"pm.test(\"ID still the same\", function(){\r",
+									"    pm.expect(jsonData.id).to.eql(55);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Data sesuai dengan Request\", function (){\r",
+									"    pm.expect(jsonData.firstName).to.eql(requestData.firstName);\r",
+									"    pm.expect(jsonData.lastName).to.eql(requestData.lastName);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate Received Data\", function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData.id).to.not.be.null;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"idBook\");\r",
+									"    pm.expect(jsonData.idBook).to.not.be.null;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"firstName\");\r",
+									"    pm.expect(jsonData.firstName).to.not.be.empty;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"lastName\");\r",
+									"    pm.expect(jsonData.lastName).to.not.be.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 55, \r\n    \"idBook\": 1, \r\n    \"firstName\": \"\", \r\n    \"lastName\": \"\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Authors/55",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Authors",
+								"55"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH-006 Delete Author",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var bodyText = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Ensure response status is 200 or 204\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code === 200 && bodyText.length > 0){\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var targetID = pm.environment.get(\"id\");\r",
+									"\r",
+									"    pm.test(\"Ensure ID correct\", function(){\r",
+									"        if(jsonData.id){\r",
+									"            pm.expect(String(jsonData.id)).to.eql(String(targetID));\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Delete success with status 204\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Authors/55",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Authors",
+								"55"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "BOOK-001 Create Book Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate new ID\",function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"data yang dikirim harus sesuai dengan yang diterima\", function () {\r",
+									"    pm.expect(jsonData.id).to.eql(requestData.id);\r",
+									"    pm.expect(jsonData.title).to.eql(requestData.title);\r",
+									"    pm.expect(jsonData.description).to.eql(requestData.description);\r",
+									"    pm.expect(jsonData.pageCount).to.eql(requestData.pageCount);\r",
+									"    pm.expect(jsonData.excerpt).to.eql(requestData.excerpt);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of Data Type Response\", function(){\r",
+									"    pm.expect(jsonData.id).to.be.a(\"number\");\r",
+									"    pm.expect(jsonData.title).to.be.a(\"string\");\r",
+									"    pm.expect(jsonData.description).to.be.a(\"string\");\r",
+									"    pm.expect(jsonData.pageCount).to.be.a(\"number\");\r",
+									"    pm.expect(jsonData.excerpt).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 100, \r\n    \"title\": \"Buku API\", \r\n    \"pageCount\": 100 ,\r\n    \"description\": \"lorem ipsum dolor siamet.\" ,\r\n    \"excerpt\": \"nothing much, you have to see it by yourself\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Books",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BOOK-002 Create Book Invalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"Response Negative Test: \", jsonData);\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function (){\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Title: One or more validation errors occurred.\", function () {\r",
+									"    pm.expect(jsonData.title).to.eql(\"One or more validation errors occurred.\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure ID is NOT created\", function(){\r",
+									"    pm.expect(jsonData).to.not.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"//array security testing\r",
+									"var forbiddenKeys = [\"id\", \"password\", \"userName\"];\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 1: No Forbidden Keys in Response\", function(){\r",
+									"    forbiddenKeys.forEach(function(key) {\r",
+									"        pm.expect(jsonData).to.not.have.property(key);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 2: Title must be an Error Message\", function(){\r",
+									"    if (jsonData.hasOwnProperty(\"title\")){\r",
+									"        pm.expect(jsonData.title).to.include(\"One or more validation errors occurred.\");\r",
+									"        pm.expect(jsonData.title).to.not.equal(\"Buku Cinta Di Bengkel Rusdi\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 101, \r\n    \"title\": 12345, \r\n    \"pageCount\": 100 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Books",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BOOK-003 Get All Books",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of All Type Data\", function(){\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.length).to.be.above(0);\r",
+									"\r",
+									"    jsonData.forEach(function (item, index) {\r",
+									"        pm.expect(item.id, \"Error di data ke-\"+ index).to.be.a(\"number\");\r",
+									"        pm.expect(item.title, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"        pm.expect(item.description, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"        pm.expect(item.pageCount, \"Error di data ke-\" + index).to.be.a(\"number\");\r",
+									"        pm.expect(item.excerpt, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Books",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BOOK-004 Update Book Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"var targetID = pm.environment.get(\"target_id\");\r",
+									"\r",
+									"pm.test(\"ID still the same\", function(){\r",
+									"    pm.expect(jsonData.id).to.eql(100);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Data sesuai dengan Request\", function (){\r",
+									"    pm.expect(jsonData.id).to.eql(requestData.id);\r",
+									"    pm.expect(jsonData.title).to.eql(requestData.title);\r",
+									"    pm.expect(jsonData.description).to.eql(requestData.description);\r",
+									"    pm.expect(jsonData.pageCount).to.eql(requestData.pageCount);\r",
+									"    pm.expect(jsonData.excerpt).to.eql(requestData.excerpt);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Struktur data tidak hilang\", function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"title\");\r",
+									"    pm.expect(jsonData).to.have.property(\"description\");\r",
+									"    pm.expect(jsonData).to.have.property(\"pageCount\");\r",
+									"    pm.expect(jsonData).to.have.property(\"excerpt\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 100, \r\n    \"title\": \"Buku API\", \r\n    \"pageCount\": 10000 , \r\n    \"description\": \"lorem ipsum dolor siamet.\" ,\r\n    \"excerpt\": \"nothing much, you have to see it by yourself\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Books/100",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Books",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BOOK-005 Update Book Invalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"var targetID = pm.environment.get(\"target_id\");\r",
+									"\r",
+									"pm.test(\"ID still the same\", function(){\r",
+									"    pm.expect(jsonData.id).to.eql(100);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Data sesuai dengan Request\", function (){\r",
+									"    pm.expect(jsonData.id).to.eql(requestData.id);\r",
+									"    pm.expect(jsonData.title).to.eql(requestData.title);\r",
+									"    pm.expect(jsonData.description).to.eql(requestData.description);\r",
+									"    pm.expect(jsonData.pageCount).to.eql(requestData.pageCount);\r",
+									"    pm.expect(jsonData.excerpt).to.eql(requestData.excerpt);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate Received Data\", function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData.id).to.not.be.null;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"title\");\r",
+									"    pm.expect(jsonData.title).to.not.be.empty;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"description\");\r",
+									"    pm.expect(jsonData.description).to.not.be.empty;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"pageCount\");\r",
+									"    pm.expect(jsonData.pageCount).to.not.be.null;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"excerpt\");\r",
+									"    pm.expect(jsonData.excerpt).to.not.be.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 100, \r\n    \"title\": \"\", \r\n    \"description\": \"\",\r\n    \"pageCount\": 0,\r\n    \"excerpt\": \"\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Books/100",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Books",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BOOK-006 Delete Book",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var bodyText = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Ensure response status is 200 or 204\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code === 200 && bodyText.length > 0){\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var targetID = pm.environment.get(\"id\");\r",
+									"\r",
+									"    pm.test(\"Ensure ID correct\", function(){\r",
+									"        if(jsonData.id){\r",
+									"            pm.expect(String(jsonData.id)).to.eql(String(targetID));\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Delete success with status 204\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Books/100",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Books",
+								"100"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CoverPhotos",
+			"item": [
+				{
+					"name": "Photo-001 Create Photo Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate new ID\",function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"data yang dikirim harus sesuai dengan yang diterima\", function () {\r",
+									"    pm.expect(jsonData.id).to.eql(requestData.id);\r",
+									"    pm.expect(jsonData.idBook).to.eql(requestData.idBook);\r",
+									"    pm.expect(jsonData.url).to.eql(requestData.url);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of Data Type Response\", function(){\r",
+									"    pm.expect(jsonData.id).to.be.a(\"number\");\r",
+									"    pm.expect(jsonData.idBook).to.be.a(\"number\");\r",
+									"    pm.expect(jsonData.url).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 6, \r\n    \"idBook\": 100, \r\n    \"url\": \"https://google.com/img.png\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/CoverPhotos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"CoverPhotos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Photo-002 Create Photo Invalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var urlPattern = /^https?:\\/\\/.+/;\r",
+									"\r",
+									"console.log(\"Response Negative Test: \", jsonData);\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function (){\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Title: One or more validation errors occurred.\", function () {\r",
+									"    pm.expect(jsonData.title).to.eql(\"One or more validation errors occurred.\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure ID is NOT created\", function(){\r",
+									"    pm.expect(jsonData).to.not.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Valid URL Format\", function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"url\");\r",
+									"    pm.expect(jsonData.url).to.match(urlPattern);\r",
+									"});\r",
+									"\r",
+									"//array security testing\r",
+									"var forbiddenKeys = [\"id\", \"password\", \"userName\"];\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 1: No Forbidden Keys in Response\", function(){\r",
+									"    forbiddenKeys.forEach(function(key) {\r",
+									"        pm.expect(jsonData).to.not.have.property(key);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 2: Title must be an Error Message\", function(){\r",
+									"    if (jsonData.hasOwnProperty(\"title\")){\r",
+									"        pm.expect(jsonData.title).to.include(\"One or more validation errors occurred.\");\r",
+									"        pm.expect(jsonData.title).to.not.equal(\"Cover Photo Created Successfully\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 7, \r\n    \"idBook\": 100, \r\n    \"url\": \"bukan_link_gambar\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/CoverPhotos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"CoverPhotos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Photo-003 Get All Photos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of All Type Data\", function(){\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.length).to.be.above(0);\r",
+									"\r",
+									"    jsonData.forEach(function (item, index) {\r",
+									"        pm.expect(item.id, \"Error di data ke-\"+ index).to.be.a(\"number\");\r",
+									"        pm.expect(item.idBook, \"Error di data ke-\" + index).to.be.a(\"number\");\r",
+									"        pm.expect(item.url, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/CoverPhotos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"CoverPhotos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Photo-004 Get Single Photo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/CoverPhotos/6",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"CoverPhotos",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Photo-005 Delete Photo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var bodyText = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Ensure response status is 404\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([404]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code === 200 && bodyText.length > 0){\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var targetID = pm.environment.get(\"id\");\r",
+									"\r",
+									"    pm.test(\"Ensure ID correct\", function(){\r",
+									"        if(jsonData.id){\r",
+									"            pm.expect(String(jsonData.id)).to.eql(String(targetID));\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Delete success with status 204\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/CoverPhotos/9999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"CoverPhotos",
+								"9999"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "USER-001 Create User Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate new ID\",function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.not.be.null;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"userName\");\r",
+									"    pm.expect(jsonData).to.not.be.empty;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"password\");\r",
+									"    pm.expect(jsonData).to.not.be.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"data yang dikirim harus sesuai dengan yang diterima\", function () {\r",
+									"    pm.expect(jsonData.id).to.eql(requestData.id);\r",
+									"    pm.expect(jsonData.userName).to.eql(requestData.userName);\r",
+									"    pm.expect(jsonData.password).to.eql(requestData.password);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of Data Type Response\", function(){\r",
+									"    pm.expect(jsonData.id).to.be.a(\"number\");\r",
+									"    pm.expect(jsonData.userName).to.be.a(\"string\");\r",
+									"    pm.expect(jsonData.password).to.be.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 99, \r\n    \"userName\": \"UserTest\", \r\n    \"password\": \"Pass123\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "USER-002 Create User Invalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"Response Negative Test: \", jsonData);\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function (){\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Title: One or more validation errors occurred.\", function () {\r",
+									"    pm.expect(jsonData.password).to.eql(\"One or more validation errors occurred.\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate new ID\",function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.not.be.null;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"userName\");\r",
+									"    pm.expect(jsonData).to.not.be.empty;\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"password\");\r",
+									"    pm.expect(jsonData).to.not.be.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"//array security testing\r",
+									"var forbiddenKeys = [\"id\", \"password\", \"userName\"];\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 1: No Forbidden Keys in Response\", function(){\r",
+									"    forbiddenKeys.forEach(function(key) {\r",
+									"        pm.expect(jsonData).to.not.have.property(key);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Security CheckPoint 2: Title must be an Error Message\", function(){\r",
+									"    if (jsonData.hasOwnProperty(\"title\")){\r",
+									"        pm.expect(jsonData.title).to.include(\"One or more validation errors occurred.\");\r",
+									"        pm.expect(jsonData.title).to.not.equal(\"User Created Successfully\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 100, \r\n    \"userName\": \"Test\", \r\n    \"password\": \"\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "USER-003 Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validation of All Type Data\", function(){\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    pm.expect(jsonData.length).to.be.above(0);\r",
+									"\r",
+									"    jsonData.forEach(function (item, index) {\r",
+									"        pm.expect(item.id, \"Error di data ke-\"+ index).to.be.a(\"number\");\r",
+									"        pm.expect(item.userName, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"        pm.expect(item.password, \"Error di data ke-\" + index).to.be.a(\"string\");\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "USER-004 Get Single User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status Code is 200 OK\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "USER-005 Update User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var requestData = JSON.parse(pm.request.body.raw);\r",
+									"var targetID = pm.environment.get(\"target_id\");\r",
+									"\r",
+									"pm.test(\"ID still the same\", function(){\r",
+									"    pm.expect(jsonData.id).to.eql(99);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Data sesuai dengan Request\", function (){\r",
+									"    pm.expect(jsonData.id).to.eql(requestData.id);\r",
+									"    pm.expect(jsonData.userName).to.eql(requestData.userName);\r",
+									"    pm.expect(jsonData.password).to.eql(requestData.password);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Struktur data tidak hilang\", function(){\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"userName\");\r",
+									"    pm.expect(jsonData).to.have.property(\"password\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"id\": 99, \r\n    \"userName\": \"UserTest\", \r\n    \"password\": \"NewPass\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Users/99",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Users",
+								"99"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "USER-006 Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var bodyText = pm.response.text();\r",
+									"\r",
+									"pm.test(\"Ensure response status is 200 or 204\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Ensure Response Time below 1 Second\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code === 200 && bodyText.length > 0){\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var targetID = pm.environment.get(\"id\");\r",
+									"\r",
+									"    pm.test(\"Ensure ID correct\", function(){\r",
+									"        if(jsonData.id){\r",
+									"            pm.expect(String(jsonData.id)).to.eql(String(targetID));\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"Delete success with status 204\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Users/99",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Users",
+								"99"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
