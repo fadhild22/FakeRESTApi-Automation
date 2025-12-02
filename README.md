@@ -3,7 +3,7 @@
 Selamat datang di repository latihan QA Automation saya!
 Project ini berisi kumpulan script otomatisasi pengujian API (API Testing) menggunakan **Postman**.
 
-Target pengujian adalah website : [FakeRestAPI](https://fakerestapi.azurewebsites.net/).
+## Target pengujian adalah website : [FakeRestAPI](https://fakerestapi.azurewebsites.net/).
 ## Test case dan Bug Report : [SpreadSheets](https://docs.google.com/spreadsheets/d/1j6KM1yZ3SwvJAHaA2s5EjchPgJ3S5B1TMPnbHxvZIOE/edit?usp=sharing)
 
 
